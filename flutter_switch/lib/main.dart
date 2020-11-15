@@ -44,7 +44,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  PageController mPageController = PageController(initialPage: 1);
+  PageController mPageController = PageController(initialPage: 0);
   final List<Widget> pages = [
     Container(
       color: Colors.pinkAccent[100],
@@ -69,7 +69,7 @@ class _HomeState extends State<Home> {
     // TODO: implement build
     return Scaffold(
       body: ProviderWidget<SwitchButtonProvider>(
-        model: SwitchButtonProvider(),
+        model: SwitchButtonProvider(mPageController.initialPage ?? 0),
         builder: (context, model, child) {
           return Scaffold(
             appBar: PreferredSize(
@@ -95,8 +95,7 @@ class _HomeState extends State<Home> {
                 itemCount: 2,
                 controller: mPageController,
                 onPageChanged: (index) {
-                  final SwitchButtonProvider page =
-                      Provider.of<SwitchButtonProvider>(context, listen: false);
+                  final SwitchButtonProvider page = Provider.of<SwitchButtonProvider>(context, listen: false);
                   page.changePage(index);
                   print('onPageChanged $index');
                 },

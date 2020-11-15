@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SwitchButtonProvider extends ChangeNotifier {
-  int _currentPage = 1;
+  int _currentPage = 0;
 
   int get page => _currentPage;
+
+  SwitchButtonProvider(int initIndex) {
+    this._currentPage = initIndex;
+  }
+
 
   void changePage(int page) {
     _currentPage = page;
@@ -26,7 +31,7 @@ class SwitchButton extends StatefulWidget {
     this.width,
     this.height,
     this.controller,
-    @required this.tabs ,
+    @required this.tabs,
     this.unSelectColor,
     this.selectColor,
   }) : super(key: key);
@@ -58,7 +63,7 @@ class _SwitchButtonState extends State<SwitchButton> {
   @override
   Widget build(BuildContext context) {
     return Consumer<SwitchButtonProvider>(
-      builder: (context, SwitchButtonProvider _page, child) {
+      builder: (context, SwitchButtonProvider provider, child) {
         return Stack(
           children: <Widget>[
             GestureDetector(
@@ -66,8 +71,9 @@ class _SwitchButtonState extends State<SwitchButton> {
                 width: widget.width,
                 height: widget.height,
                 decoration: BoxDecoration(
-                    color: widget.unSelectColor ?? Colors.grey[200],
-                    borderRadius: BorderRadius.circular(widget.height / 2)),
+                  color: widget.unSelectColor ?? Colors.grey[200],
+                  borderRadius: BorderRadius.circular(widget.height / 2),
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -99,29 +105,33 @@ class _SwitchButtonState extends State<SwitchButton> {
                   currentIndex = 0;
                   this.value = 0.0;
                 }
-                _page.changePage(currentIndex);
+                provider.changePage(currentIndex);
                 if (widget.controller != null) {
-                  widget.controller.animateToPage(currentIndex,
-                      duration: _duration, curve: Curves.ease);
+                  widget.controller.animateToPage(
+                    currentIndex,
+                    duration: _duration,
+                    curve: Curves.ease,
+                  );
                 }
                 setState(() {});
               },
             ),
             AnimatedPositioned(
-              left: _page.page == 0 ? 0 : this.centerPoint - padding,
+              left: provider.page == 0 ? 0 : this.centerPoint - padding,
               duration: _duration,
               child: Container(
                 width: centerPoint - padding,
                 height: widget.height - padding * 2,
                 decoration: BoxDecoration(
                   color: widget.selectColor ?? Colors.white,
-                  borderRadius:
-                      BorderRadius.circular((widget.height - padding * 2) / 2),
+                  borderRadius: BorderRadius.circular(
+                    (widget.height - padding * 2) / 2,
+                  ),
                 ),
                 margin: EdgeInsets.all(padding),
                 child: Center(
                   child: Text(
-                    widget.tabs[_page.page] ?? "",
+                    widget.tabs[provider.page] ?? "",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 14,
