@@ -4,7 +4,8 @@
  ![image-w100](https://github.com/Luy7788/flutter_switch/blob/main/preview/icon1.png)
 
 点击右滑动动画，同时下面的PageView页面也跟着画的
- ![image](https://github.com/Luy7788/flutter_switch/blob/main/preview/icon2.png)
+ ![image](https://github.com/Luy7788/flutter_switch/blob/main/preview/2020-11-1612.15.53.gif)
+ 
 使用方法
 ```
 SwitchButton(
