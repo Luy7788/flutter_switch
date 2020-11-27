@@ -10,7 +10,6 @@ class SwitchButtonProvider extends ChangeNotifier {
     this._currentPage = initIndex;
   }
 
-
   void changePage(int page) {
     _currentPage = page;
     notifyListeners();
@@ -44,20 +43,34 @@ class SwitchButton extends StatefulWidget {
 
 class _SwitchButtonState extends State<SwitchButton> {
   double centerPoint;
-  double value;
+  int _currentPage;
   Duration _duration = Duration(milliseconds: 100);
-  double padding = 4;
+  double _padding = 4;
+  double _dragDistance = 0;
 
   @override
   void initState() {
     super.initState();
     this.centerPoint = widget.width / 2;
-    this.value = 0;
+    this._currentPage = 0;
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  changePage(int currentIndex) {
+    final SwitchButtonProvider provider =
+        Provider.of<SwitchButtonProvider>(context, listen: false);
+    provider.changePage(currentIndex);
+    if (widget.controller != null) {
+      widget.controller.animateToPage(
+        currentIndex,
+        duration: _duration,
+        curve: Curves.ease,
+      );
+    }
   }
 
   @override
@@ -98,44 +111,51 @@ class _SwitchButtonState extends State<SwitchButton> {
               ),
               onTap: () {
                 int currentIndex;
-                if (this.value == 0.0) {
-                  this.value = widget.width / 2;
+                if (this._currentPage == 0) {
+                  this._currentPage = 1;
                   currentIndex = 1;
                 } else {
                   currentIndex = 0;
-                  this.value = 0.0;
+                  this._currentPage = 0;
                 }
-                provider.changePage(currentIndex);
-                if (widget.controller != null) {
-                  widget.controller.animateToPage(
-                    currentIndex,
-                    duration: _duration,
-                    curve: Curves.ease,
-                  );
-                }
-                setState(() {});
+                changePage(currentIndex);
               },
             ),
             AnimatedPositioned(
-              left: provider.page == 0 ? 0 : this.centerPoint - padding,
+              left: provider.page == 0 ? 0 : this.centerPoint - _padding,
               duration: _duration,
-              child: Container(
-                width: centerPoint - padding,
-                height: widget.height - padding * 2,
-                decoration: BoxDecoration(
-                  color: widget.selectColor ?? Colors.white,
-                  borderRadius: BorderRadius.circular(
-                    (widget.height - padding * 2) / 2,
+              child: GestureDetector(
+                onHorizontalDragUpdate: (DragUpdateDetails value) {
+                  _dragDistance = value.localPosition.dx;
+                },
+                onHorizontalDragEnd: (DragEndDetails value) {
+                  if (_dragDistance < -10) {
+                    changePage(0);
+                  } else if (_dragDistance > 10) {
+                    changePage(1);
+                  }
+                },
+                onHorizontalDragStart: (value) {
+                  _dragDistance = 0;
+                },
+                child: Container(
+                  width: centerPoint - _padding,
+                  height: widget.height - _padding * 2,
+                  decoration: BoxDecoration(
+                    color: widget.selectColor ?? Colors.white,
+                    borderRadius: BorderRadius.circular(
+                      (widget.height - _padding * 2) / 2,
+                    ),
                   ),
-                ),
-                margin: EdgeInsets.all(padding),
-                child: Center(
-                  child: Text(
-                    widget.tabs[provider.page] ?? "",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                  margin: EdgeInsets.all(_padding),
+                  child: Center(
+                    child: Text(
+                      widget.tabs[provider.page] ?? "",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
