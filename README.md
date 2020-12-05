@@ -5,19 +5,6 @@
 
 点击右滑动动画，同时下面的PageView页面也跟着画的
  ![image](https://github.com/Luy7788/flutter_switch/blob/main/preview/2020-11-1612.15.53.gif)
- 
-使用方式
-```
-SwitchButton(
-    width: 120, //宽度
-    height: 44, //高度
-    controller: mPageController, //下面的PageView的controller
-    tabs: ['推荐', '热门'], 
-    selectColor: Colors.white,
-    unSelectColor: Colors.grey[300],
-    currentIndex: 0,//选中
-  ),
-```
 
 分析下结构，首先最底下有个灰色的背景，上面有个白色的选中框，最上面是两个Text，然后当点击到空白灰色时，控制白色的选中框移动，而且需要添加一个动画过渡效果。
 
